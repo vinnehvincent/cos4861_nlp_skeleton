@@ -23,6 +23,13 @@ class Span:
         return self._start == start and self._end == fin
 
 
+def subst(source, target, cost):
+    if source == target:
+        return 0
+    return cost
+    pass
+
+
 class DistanceCalculator:
     """
     The ADistanceCalculator class defines a metric on strings. It is a way of determining the distance from
@@ -48,10 +55,16 @@ class DistanceCalculator:
         :param target: The target string
         :return: The scalar distance between the source and target.
         """
-        dist = [len(source)][len(target)]
-        dist[0][0] = 0
-        for i in range(1, len(source)):
-            dist[i][0] = dist[i-1][0] + self._deletion_cost;
-        for j in range(1, len(target)):
-            dist[0][j] = dist[0][j-1] + self._insert_cost;
-        return 0
+        m = len(source)
+        n = len(target)
+        dist = [[0 for i in range(m + 1)] for j in range(n + 1)]
+        for i in range(1, n + 1):
+            dist[i][0] = dist[i - 1][0] + self._deletion_cost
+        for j in range(1, m + 1):
+            dist[0][j] = dist[0][j - 1] + self._insert_cost
+        for j in range(1, m + 1):
+            for i in range(1, n + 1):
+                dist[i][j] = min(dist[i - 1][j] + self._insert_cost,
+                                 dist[i][j - 1] + self._deletion_cost,
+                                 dist[i - 1][j - 1] + subst(source[j - 1], target[i - 1], self._subst_cost))
+        return dist[n][m]
