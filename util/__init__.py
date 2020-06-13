@@ -1,8 +1,8 @@
-
 class Span:
     """
     Span objects are used to define boundaries within other iterables.
     """
+
     def __init__(self, start, end):
         if not start <= end:
             raise ValueError('Start cannot be greater than or equal to End')
@@ -21,13 +21,6 @@ class Span:
     def __eq__(self, other):
         start, fin = other.span()
         return self._start == start and self._end == fin
-
-
-def subst(source, target, cost):
-    if source == target:
-        return 0
-    return cost
-    pass
 
 
 class DistanceCalculator:
@@ -55,6 +48,7 @@ class DistanceCalculator:
         :param target: The target string
         :return: The scalar distance between the source and target.
         """
+        """subst(source[j - 1], target[i - 1], self._subst_cost)"""
         m = len(source)
         n = len(target)
         dist = [[0 for i in range(m + 1)] for j in range(n + 1)]
@@ -66,5 +60,5 @@ class DistanceCalculator:
             for i in range(1, n + 1):
                 dist[i][j] = min(dist[i - 1][j] + self._insert_cost,
                                  dist[i][j - 1] + self._deletion_cost,
-                                 dist[i - 1][j - 1] + subst(source[j - 1], target[i - 1], self._subst_cost))
+                                 dist[i - 1][j - 1] + (0 if source[j - 1] == target[i - 1] else self._subst_cost))
         return dist[n][m]
